@@ -1,0 +1,444 @@
+JAIGURU ASTROREMEDY
+DETAILED, ZERO-AMBIGUITY SCOPE OF WORK AND UI/UX SPECIFICATION
+====================================================================
+
+DOCUMENT CONTROL
+----------------
+Project: Jaiguru Astroremedy
+Application type: Public spiritual-services website, product storefront, consultation booking funnel, and protected CMS/admin console
+Repository: manish4545888-maker/Jaiguru_Final_Fixed
+Current branch context: jaiguru-repository-maintenance
+Framework: Next.js 16 App Router, React 19, TypeScript, Tailwind CSS v4, Prisma, PostgreSQL-compatible persistence
+Primary deployment target: Vercel
+Primary public domain target: www.jaiguruastroremedy.com
+Document purpose: Authoritative implementation, QA, content, and design reference for the existing full project.
+
+This document describes the existing product and the required behavior. It is not permission to redesign,
+remove, migrate, or replace working functionality. Any implementation decision not explicitly listed here must
+preserve existing routes, data contracts, accessibility, security, and administrator workflows.
+
+NON-NEGOTIABLE CONSTRAINTS
+--------------------------
+1. Do not modify prisma/schema.prisma unless a separately approved database change explicitly requires it.
+2. Do not connect a temporary, disposable, or unapproved database during development or verification.
+3. Do not request real production credentials in chat. Use project-managed environment variables and existing integrations.
+4. Do not hardcode product, service, legal, contact, pricing, theme, or social data when an existing CMS/data source provides it.
+5. Prices must be treated as integer paise internally and displayed as Indian rupee values.
+6. Every state-changing endpoint must validate input, authorize the caller, and return a deterministic error response.
+7. Public pages must remain responsive at mobile, tablet, and desktop widths.
+8. Existing URL paths and deep links must remain valid. Redirect aliases may be added, but existing routes must not be silently removed.
+9. All images require meaningful alt text unless they are purely decorative.
+10. Never expose secrets, payment credentials, database URLs, or private upload URLs to the client unnecessarily.
+
+1. PRODUCT OBJECTIVE
+--------------------
+Jaiguru Astroremedy presents Vedic astrologer Arup Shastri as a spiritual guidance provider offering astrology,
+numerology, vastu, yoga, spiritual remedies, gemstone guidance, courses, consultations, and related products.
+The experience must convert visitors into one of four primary actions:
+- Start a WhatsApp conversation.
+- Call the business.
+- Book or request a consultation/service.
+- Browse, purchase, and track a product order.
+
+Secondary outcomes:
+- Build trust through profile information, testimonials, galleries, FAQs, legal policies, and transparent contact details.
+- Give administrators complete content, catalog, pricing, order, booking, media, theme, SEO, and operational control.
+- Support future marketplace/vendor workflows without degrading the consumer storefront.
+
+2. CURRENT TECHNICAL ARCHITECTURE
+----------------------------------
+2.1 Application structure
+- Next.js App Router under src/app.
+- Public routes are grouped under src/app/(public).
+- Protected administrative routes are grouped under src/app/admin/(protected).
+- Authentication routes are under src/app/admin/(auth).
+- API route handlers are under src/app/api.
+- Shared UI is under src/components.
+- Domain/data utilities are under src/lib.
+- Prisma schema and migrations are under prisma.
+- Static assets are under public and Product_photo.
+
+2.2 Runtime and UI foundations
+- Tailwind CSS v4 with semantic tokens in src/app/globals.css.
+- shadcn/ui primitives are present for alert, avatar, badge, button, card, checkbox, dialog, dropdown,
+  input, label, select, separator, sheet, skeleton, sonner, switch, table, tabs, and textarea.
+- Lucide React supplies interface icons.
+- Framer Motion supports intentional reveal/motion effects.
+- next-themes and runtime theme variables support theme administration.
+- Sonner provides toast feedback.
+- Tiptap provides rich article/content editing.
+- Vercel Blob is used for uploads where configured.
+- Razorpay integration and webhook routes exist for payment handling.
+
+2.3 Persistence domain
+The existing Prisma model domain includes: users and roles; product categories, products, images, and price
+changes; service categories, services, consultation topics, and booking blocks; articles; orders and order items;
+marketplace orders, vendor orders, settlements, payouts, ledger entries, tenders, bids, awards, automation
+exceptions/runs; support tickets; marketplace payment/shipping settings, shipments/events; gallery images,
+videos, YouTube videos; testimonials; announcements; homepage sections; site settings; notifications; email
+settings and scheduled notifications; mobile OTP; theme, SEO, social, subscriber, legal, FAQ, site image, contact,
+organization, supplier, KYC, bank, and marketplace settings.
+This list is an inventory only. The schema remains protected by the constraints above.
+
+3. INFORMATION ARCHITECTURE AND ROUTES
+---------------------------------------
+3.1 Public routes (must remain functional)
+- / : home and conversion hub.
+- /about : astrologer and business story.
+- /astrology-consultation : astrology consultation landing page.
+- /numerology-consultation : numerology consultation landing page.
+- /vastu-consultation : vastu consultation landing page.
+- /medical-astrology : carefully worded medical astrology guidance page.
+- /spiritual-remedies : spiritual remedy page.
+- /black-magic-protection : protection/remedy guidance page.
+- /yoga-guidance : yoga guidance page.
+- /astrology-course : astrology course page.
+- /yoga-course : yoga course page.
+- /consultations and /consultations/[slug] : consultation listing and detail.
+- /services and /services/[slug] : service/course listing and detail.
+- /products and /products/[slug] : storefront listing and product detail.
+- /cart : cart review and quantity management.
+- /checkout : customer details, payment selection, and order submission.
+- /track-order : reference/tracking lookup.
+- /articles and /articles/[slug] : article listing and detail when enabled.
+- /photo-gallery, /video-gallery, /youtube-gallery : media galleries.
+- /testimonials : approved testimonials.
+- /faq : frequently asked questions.
+- /contact : contact form, chamber details, call/WhatsApp actions, and directions.
+- /legal/[slug] : CMS-managed legal pages.
+
+3.2 Authentication routes
+- /admin/signin : administrator sign-in.
+- /admin/signup : administrator registration where enabled.
+- /admin/forgot-password : password recovery request.
+- /admin/reset-password : password reset completion.
+
+3.3 Protected administration routes
+- /admin : dashboard and operational summary.
+- /admin/products, /admin/products/new, /admin/products/[id]/edit : product CRUD.
+- /admin/services, /admin/services/new, /admin/services/[id]/edit : service CRUD.
+- /admin/categories : product/category management.
+- /admin/consultation-topics and edit/new : consultation topic CRUD.
+- /admin/bookings and /admin/booking-settings : booking operations and availability.
+- /admin/orders and /admin/orders/[id] : order list, detail, fulfillment, status, slips.
+- /admin/pricing : pricing controls and bulk/sweep utilities.
+- /admin/payment-settings : payment settings.
+- /admin/settlements, /admin/tenders, /admin/exceptions : marketplace finance/operations.
+- /admin/vendors : vendor review and KYC-related review.
+- /admin/analytics : business analytics.
+- /admin/homepage, /admin/hero, /admin/announcements : homepage content.
+- /admin/branding, /admin/theme-settings, /admin/typography : visual system controls.
+- /admin/gallery and nested photo/video/youtube routes : media management.
+- /admin/articles and nested new/edit routes : article CMS.
+- /admin/testimonials and nested new/edit routes : testimonial CMS.
+- /admin/faq : FAQ management.
+- /admin/legal and /admin/legal-pages and nested routes : legal content.
+- /admin/contact, /admin/contact/[id], /admin/contact-settings : messages and contact configuration.
+- /admin/social-links, /admin/seo-settings, /admin/footer : global marketing configuration.
+- /admin/subscribers : newsletter subscriber list.
+- /admin/notifications : notification center.
+- /admin/users : administrator/user management.
+- /admin/system : system status.
+- /admin/change-password : authenticated password change.
+
+4. GLOBAL UI/UX DESIGN SYSTEM
+-----------------------------
+4.1 Brand direction
+The visual language is premium celestial spirituality: deep cosmic navy, royal purple/indigo, gold, saffron,
+emerald/WhatsApp green, and warm cream product surfaces. The interface must feel trustworthy and calm rather
+than visually noisy. Use gold as a deliberate premium accent, not as body text on light backgrounds unless contrast
+is verified.
+
+4.2 Color tokens
+Use semantic CSS variables and existing runtime theme tokens. Core meanings:
+- Deep navy/cosmic black: page background, header/footer, authority.
+- Royal purple/indigo: primary brand action, spiritual identity, links.
+- Gold/premium gold: focus ring, price emphasis, selected state, premium details.
+- Cream/card surface: product/service content surfaces.
+- Emerald/WhatsApp green: WhatsApp-specific actions only.
+- Saffron: occasional spiritual highlight or warning/attention accent.
+Do not introduce a new color for a one-off component. Do not use raw colors when a semantic token exists.
+
+4.3 Typography
+- Body: Inter or the current project sans variable.
+- Headings/display: current Playfair/display variable where already configured.
+- Monospace: Geist Mono only for technical identifiers or reference numbers.
+- Body text minimum target: 16px with relaxed line-height.
+- Headings use text-balance/text-pretty and a clear hierarchy.
+- Avoid more than two visual font families in the public experience.
+
+4.4 Shape, depth, and surfaces
+- Cards use the existing runtime radius tokens; product cards and service cards may have distinct configured radii.
+- Celestial hero backgrounds may use existing gradient/starfield classes, but decorative effects must not reduce readability.
+- Use glass surfaces only when text contrast remains AA-compliant.
+- Use one clear elevation language: restrained shadow on light cards and a soft gold/purple edge on premium surfaces.
+- Avoid gratuitous floating blobs, decorative numbers, or competing gradients.
+
+4.5 Layout rules
+- Mobile-first.
+- Use flexbox for one-dimensional layout and grid for true two-dimensional collections.
+- Use max-width containers and consistent horizontal padding.
+- Keep primary actions visible without horizontal scrolling.
+- Action groups may wrap on very narrow screens but must not create clipped text.
+- Use adequate touch targets, ideally 44px or larger.
+- Maintain visible focus states and keyboard order.
+
+4.6 Motion rules
+- Motion communicates hierarchy, loading, expansion, or confirmation.
+- Use short reveal transitions for hero/content sections and subtle hover elevation for cards.
+- Respect prefers-reduced-motion.
+- Never make essential content depend on animation completion.
+
+5. SHARED PUBLIC SHELL
+----------------------
+5.1 Top contact bar
+Purpose: immediately expose booking/query channels.
+Required content: “Booking / Query”, call number, WhatsApp number, call action, WhatsApp action, and configured
+social links where available. Desktop may show full labels; mobile must prioritize icon plus short accessible label.
+All phone/WhatsApp links must be generated from configured contact data, not duplicated constants.
+
+5.2 Main header
+Required: replaceable square logo, brand name, short astrologer descriptor, navigation, WhatsApp CTA, call CTA,
+and mobile menu. Header behavior must remain usable when sticky. Mobile menu must trap/restore focus correctly and
+close after navigation.
+
+5.3 Footer
+Required: business identity, contact details, navigation groups, legal links, social links, newsletter subscribe
+form, and copyright. Footer content is CMS-controlled where a corresponding setting exists. Legal links must not
+be hidden behind an inaccessible hover-only interaction.
+
+5.4 Floating support actions
+Floating WhatsApp/support controls must not cover checkout controls, cookie/install banners, or form submit buttons.
+They require accessible labels, a visible focus ring, and sensible mobile placement.
+
+6. HOME PAGE UX SPECIFICATION
+-----------------------------
+6.1 Hero
+Content order: eyebrow/business identity; primary value proposition; supporting explanation; consultation fee or
+availability cue; primary WhatsApp booking CTA; secondary call CTA; tertiary explore CTA; astrologer image; optional
+master image. On mobile, text precedes imagery unless the existing composition proves otherwise. Image must have a
+specific alt description. The hero must communicate what the business does and where it serves within the first
+viewport.
+
+6.2 Announcement rails
+There are two configurable announcement lines. Each line needs readable contrast, pause/stop behavior or a
+non-moving fallback for reduced motion, and no essential information that is unavailable in static text. Admin
+controls: text, colors, size, style, speed, active state.
+
+6.3 Consultation cards
+Cards must identify the consultation type, explain the outcome without guaranteed medical claims, show fee when
+applicable, and provide exactly one dominant booking action plus a detail action. The cards must be consistent in
+height where rendered as a grid and remain readable at 320px viewport width.
+
+6.4 Featured products
+Render configured featured products, with safe empty/loading/error states. Each card should show image, name,
+category, concise benefit/description, current price, optional comparison price, availability, rating if real data
+exists, featured/popular/new badge if configured, Order on WhatsApp, and View Details. Do not display fake ratings.
+The product image must preserve aspect ratio and use a predictable fallback.
+
+6.5 Featured services
+Render configured featured service packages. Each card shows title, mode, duration, price, concise description,
+Book action, and details. Distinguish courses from consultations so visitors understand the transaction.
+
+6.6 Media and trust sections
+YouTube cards require thumbnail, title, category, play affordance, and safe external link behavior. Photo gallery
+requires responsive grid, category where configured, lightbox with close/previous/next and keyboard support. Testimonials
+must be approved records only. FAQ must use an accessible accordion with one clear question per trigger.
+
+7. PRODUCT CATALOG UX
+---------------------
+7.1 Listing page
+Required states: initial loading, successful results, no matching results, server/API error, and pagination.
+Filters may include category, parent category, search, price range, availability, and sort according to existing API
+support. Filter changes must update URL query parameters so links are shareable and back/forward navigation works.
+The selected filter must be visually and programmatically identifiable.
+
+7.2 Product card
+Required data: image, product name, category, variant/tier if relevant, price in INR, availability/stock status,
+small description, badge only when true, Add to Cart, Order/WhatsApp, and View Details. Buttons must have distinct
+labels and not both perform the same hidden action. Disabled state must explain why.
+
+7.3 Product detail
+Required: breadcrumb; gallery with thumbnails and accessible image labels; product name; category; description;
+benefits/usage where available; authenticity/certificate information; tier/size/variant selection; price; stock;
+quantity; Add to Cart; WhatsApp Order; shipping/return policy summary; related products. Variant selection must
+update displayed price and selected SKU/variant deterministically. Do not allow checkout with an unavailable variant.
+
+7.4 Cart
+Show grouped items, image, title, selected variant, unit price, quantity controls, line totals, remove action,
+subtotal, shipping/tax/total where supported, and proceed-to-checkout. Quantity controls must reject zero/negative/
+non-integer values and preserve cart state through navigation. Empty cart must include a direct products CTA.
+
+8. CHECKOUT AND PAYMENT UX
+---------------------------
+8.1 Checkout form
+Collect only required fields: name, phone, WhatsApp number where needed, email where needed, address, city, state,
+and pincode. Use labels, inline validation, input modes, autocomplete attributes, and clear error recovery.
+Do not clear valid customer data after an error. Show order summary beside the form on desktop and above/below it on
+mobile. Totals must be recomputed server-side from trusted catalog data.
+
+8.2 Payment selection
+Present configured methods only. Each method requires a plain-language explanation, amount, confirmation state,
+and failure/retry path. Razorpay order creation must use server-calculated integer paise. UPI/QR/manual payment
+flows must clearly state whether payment proof is required, what screenshot/file format is accepted, and that order
+status remains pending until verification where applicable.
+
+8.3 Confirmation
+After success or pending submission, show a stable order reference, payment state, amount, next steps, WhatsApp
+confirmation CTA, track-order CTA, and support contact. Prevent duplicate submissions by disabling the primary action
+while processing and enforcing idempotency server-side.
+
+8.4 WhatsApp behavior
+Generate messages from sanitized order/service data. Encode URL parameters safely. Never include secrets or internal
+notes. The user must be told exactly what to send, such as payment screenshot or order reference, when required.
+External WhatsApp links open safely and preserve the current page when appropriate.
+
+9. CONSULTATION, SERVICE, AND BOOKING UX
+-----------------------------------------
+- Listing cards must distinguish consultation topic, service/course, duration, mode, fee, and availability.
+- Detail pages must state who the service is for, what is included, preparation steps, duration/mode, fee, booking
+  action, cancellation/contact policy, and any limitations.
+- Booking forms must use configured availability/blocked dates and show timezone/India context when relevant.
+- Booking confirmation must include reference, selected topic/service, appointment details, payment state, and support path.
+- Medical astrology and wellness language must include a visible disclaimer: spiritual guidance is not medical diagnosis,
+  treatment, or a guaranteed cure; users should consult qualified healthcare professionals for medical concerns.
+- Do not promise guaranteed outcomes for astrology, spiritual, financial, relationship, or health matters.
+
+10. CONTACT, CONTENT, AND SEO UX
+-------------------------------
+Contact page must show chamber address, map/directions link, call, WhatsApp, hours when configured, contact form,
+and expected response guidance. Forms need success, validation, rate-limit, and server-error states.
+
+Articles, legal pages, FAQs, galleries, testimonials, homepage sections, SEO fields, and social links must render
+CMS values safely. Rich HTML/Markdown must be sanitized or rendered through the existing safe renderer. Metadata must
+include title, description, canonical intent, Open Graph image when configured, and meaningful page-specific text.
+
+11. ADMIN UX SPECIFICATION
+--------------------------
+11.1 Shared admin shell
+Admin pages require authenticated access and a consistent sidebar/header. The sidebar must expose all active
+modules grouped by workflow: overview, commerce, bookings, content, media, marketing, settings, operations, and
+account. Mobile navigation must be keyboard accessible and show the current route.
+
+11.2 Dashboard
+Show actionable counts, recent orders/bookings/messages, pending approvals, exceptions, and shortcuts. Counts must
+come from real data; zero is a valid state. Each metric needs a label, time/context, and link to the underlying list.
+
+11.3 CRUD forms
+Every form must define required fields, validation rules, save state, success feedback, failure feedback, cancel
+behavior, and unsaved-change expectations. Image uploaders must validate type/size, show progress, handle failure,
+and not leave orphaned references. Delete actions require explicit confirmation and explain impact.
+
+11.4 Products/services/categories
+Tables need search, filter, status, pagination or bounded loading, edit, preview, and delete actions. Forms must
+support slugs, visibility, featured state, ordering, prices, images, descriptions, categories, variants/tiers, stock,
+and SEO fields where the existing model supports them. Price updates must show audit/history information when available.
+
+11.5 Orders, bookings, fulfillment, and payments
+Order detail must show immutable customer/order facts, item lines, payment history/state, shipping/fulfillment,
+internal status controls, audit timestamps, and downloadable slip where available. Status transitions must be
+validated and must not imply payment success when payment is pending or failed. Booking admin must show calendar/list
+views, blocks, appointment data, and safe rescheduling/cancellation behavior.
+
+11.6 Marketplace operations
+Vendor onboarding, KYC review, marketplace orders, tenders, bids, awards, settlements, payouts, ledger entries,
+shipments, exceptions, and notifications require role checks, clear statuses, audit trails, and reconciliation-safe
+operations. High-impact actions must display confirmation and the resulting reference/status.
+
+11.7 Theme/branding/content settings
+Theme settings must preview changes before save where practical, preserve readable contrast, and provide reset/default
+behavior. Branding controls cover logo/favicon/hero/site imagery. Typography controls must not permit unreadable sizes.
+Announcement, footer, SEO, legal, FAQ, social, gallery, article, and testimonial editors must show publication/active
+state and last-updated context.
+
+12. API AND SECURITY REQUIREMENTS
+---------------------------------
+- Validate all JSON/query/form inputs with the project validation conventions.
+- Authorize admin/vendor/user actions server-side; never trust client role flags.
+- Scope user data by authenticated user identity.
+- Use parameterized Prisma queries and safe dynamic sort/filter allowlists.
+- Recompute product prices, quantities, shipping, and totals on the server.
+- Enforce aggregate quantity limits and reject malformed quantities.
+- Verify Razorpay/webhook signatures and make webhook processing idempotent.
+- Rate-limit OTP, contact, support, checkout, and upload endpoints.
+- Sanitize filenames, content, URLs, and rich text.
+- Avoid leaking database errors, stack traces, or internal IDs to public users.
+- Add baseline production security headers in the existing Next.js configuration without breaking preview rendering.
+
+13. ACCESSIBILITY ACCEPTANCE CRITERIA
+-------------------------------------
+- All interactive controls have accessible names.
+- All form controls have associated labels and errors are announced or programmatically connected.
+- Keyboard users can reach, operate, and exit menus, dialogs, lightboxes, accordions, tabs, and forms.
+- Focus is visible and not trapped behind overlays.
+- Color is never the only status indicator.
+- Text and controls meet WCAG AA contrast targets.
+- Images have useful alt text; decorative images are marked decorative.
+- Motion respects prefers-reduced-motion.
+- Tables have headers and mobile overflow behavior that remains usable.
+- Screen-reader-only text is used for icon-only controls.
+
+14. RESPONSIVE QA MATRIX
+------------------------
+Minimum verification widths: 320x800, 375x812, 768x1024, 1024x768, 1280x800, and 1440x900.
+At each width verify: no horizontal page overflow; header/menu; hero; card grids; filter controls; product gallery;
+cart quantity controls; checkout form and payment actions; dialogs/lightboxes; footer; floating CTAs; admin tables/forms.
+On mobile, primary CTAs must remain visible, text must not be clipped, and action groups must stack or wrap cleanly.
+
+15. FUNCTIONAL ACCEPTANCE TESTS
+--------------------------------
+A. Public navigation: every listed route resolves; breadcrumbs and header/footer links work; invalid slugs produce a
+   deliberate not-found state.
+B. Catalog: category/search/sort URL state changes results; refresh preserves filters; no-result and server-error
+   states are understandable.
+C. Cart: add product, select variant, change quantity, remove item, reload/navigate, and reach checkout.
+D. Checkout: invalid form blocks submission; valid order creates one order; duplicate clicks do not create duplicates;
+   payment failure can retry; success/pending state includes reference and next steps.
+E. WhatsApp: generated message contains correct sanitized item/service and amount; link is encoded and usable.
+F. Booking: unavailable slots cannot be selected; valid booking confirms reference and support instructions.
+G. Admin auth: unauthenticated users cannot access protected pages; sign-in/sign-out/reset paths behave correctly.
+H. Admin CRUD: create, edit, preview, activate/deactivate, and delete operations have complete feedback.
+I. Media: upload validation, preview, delete, lightbox, and external video links work.
+J. Operations: order status, shipment, settlement, exception, and notification changes are auditable and authorized.
+K. SEO: metadata exists for representative public listing/detail/legal/article pages; sitemap/robots behavior is intentional.
+L. Build quality: npm run typecheck, npm run lint, and npm run build pass without modifying the protected schema.
+
+16. CONTENT AND BUSINESS RULES
+------------------------------
+Canonical business contact values are configured data and must be used consistently. Known business positioning:
+- Vedic Astrologer Arup Shastri (Jai Guru).
+- Spiritual Master / True Healer positioning must not become a medical guarantee.
+- Astrology, numerology, and vastu consultation pricing has historically been represented as ₹700; current price
+  must be read from configured data when available.
+- Primary conversion channels are WhatsApp and telephone.
+- Chamber address and directions must be shown wherever location context is promised.
+- Product and service copy must be respectful, non-coercive, and transparent about limitations, delivery, returns,
+  payment verification, and appointment expectations.
+
+17. DELIVERY CHECKLIST
+-----------------------
+Before any production release:
+[ ] Confirm repository status and review only intended files.
+[ ] Confirm prisma/schema.prisma has no unintended diff.
+[ ] Run typecheck, lint, and build.
+[ ] Verify all environment variable names through project settings/integration status; do not print values.
+[ ] Verify representative public flows in a real browser.
+[ ] Verify admin auth and a representative CRUD flow.
+[ ] Verify checkout in test/sandbox mode only when payment integration is approved.
+[ ] Verify webhook signature/idempotency logic without using production secrets.
+[ ] Verify mobile widths and keyboard/screen-reader basics.
+[ ] Confirm SEO metadata, legal links, contact details, and disclaimers.
+[ ] Create a descriptive commit containing only approved changes.
+[ ] Push only to the approved feature/release branch or explicitly approved target branch.
+
+18. CHANGE CONTROL
+------------------
+Any request to add a page, field, payment method, database model, role, vendor workflow, integration, or destructive
+operation must state: business purpose; user role; route; UI states; validation; persistence; authorization; failure
+behavior; analytics/audit impact; migration impact; rollback plan; and acceptance tests. If one of these is unknown,
+the implementation is not zero-ambiguity and must stop for clarification rather than guessing.
+
+END OF SCOPE OF WORK
+====================================================================
+Generated from the existing Jaiguru Astroremedy project structure and implementation conventions.
+This file is a requirements reference; it does not replace route-level code review or approved operational policy.
