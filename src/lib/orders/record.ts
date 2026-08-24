@@ -1,6 +1,7 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
+import { orderReference } from "@/lib/orders/status";
 
 /**
  * Public order recorder.
@@ -45,11 +46,6 @@ export interface RecordOrderResult {
    * than stored so no schema change is required.
    */
   reference?: string;
-}
-
-/** "JG-4F9K2A1B" — stable, derived from the order cuid. */
-export function orderReference(id: string): string {
-  return `JG-${id.slice(-8).toUpperCase()}`;
 }
 
 export async function recordOrderAction(
