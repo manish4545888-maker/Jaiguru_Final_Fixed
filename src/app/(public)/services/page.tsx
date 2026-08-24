@@ -43,9 +43,13 @@ function ModeBadge({ mode }: { mode: ServiceMode }) {
  );
 }
 
+interface ServicesPageProps {
+ searchParams: Promise<Record<string, string | string[] | undefined>>;
+}
+
 export default async function ServicesPage({
  searchParams,
-}: PageProps<"/services">) {
+}: ServicesPageProps) {
  const sp = await searchParams;
  const modeKey = typeof sp?.mode === "string" ? sp.mode : "all";
  const mode = modeKey === "all" ? null : SERVICE_MODE_SLUGS[modeKey] ?? null;

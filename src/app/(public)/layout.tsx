@@ -25,7 +25,11 @@ export async function generateMetadata(): Promise<Metadata> {
  */
 export const dynamic = "force-dynamic";
 
-export default function PublicLayout({ children }: LayoutProps<"/">) {
+interface PublicLayoutProps {
+  children: React.ReactNode;
+}
+
+export default function PublicLayout({ children }: PublicLayoutProps) {
   return (
     <CartProvider>
       <>
